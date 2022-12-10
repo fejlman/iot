@@ -7,39 +7,36 @@
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
   
-        function zjistiHodnotu() {//zjistí hodnotu z nacti.php
+        function zjistiHodnotu() {//zjistí hodnotu z nacti.php a uloží jí do arraye
         var ret = $.ajax({
           url: "http://localhost/iot/nacti.php",
           dateType: "text",
           async: false
         }).responseText;
 
-        //var $display = $ret.split(',');
+        var data = [];//založí se prázdný array data, který později budeme vracet
+        data[0] = ["Čas","Rychlost větru"];//nahrajeme do něj labely, bez kterých se linechart nevykreslí
 
-        var data = [];
-        data[0] = ["Čas","Rychlost větru"];
-
-        ret = ret.split("\n");
-        ret.pop();
+        ret = ret.split("\n");//řetězec z nacti.php se rozdělí podle řádek, stále se uvnitř počítá jako string
+        ret.pop();//vypustí se poslední řádka, která je vždy prázdná, aby se mohly přidávat další hodnoty 
         console.log(ret);
 
         for(let i = 0; i < ret.length; i++) {
-          let lineElements = ret[i].split(",");
+          let lineElements = ret[i].split(",");//jednotlivé elementy arraye ret se rozdělí podle čárky a vznikají arraye v arrayji, každý se dvěmi hodnotami, pořadím a hodnotou
           for(let j = 0; j < lineElements.length; j++) {
-            lineElements[j] = parseInt(lineElements[j]);
+            lineElements[j] = parseInt(lineElements[j]);//elementy se přetypují na int, aby se dali zavést do grafu
           }
-          data[i+1] = lineElements;
+          data[i+1] = lineElements;//elementy se zanesou do arraye data
         }
 
         console.log(data);
-        return data;
+        return data;//vrací se array data
         };
 
-        function drawChart() {
-          $i = 0;
+        function drawChart() {//vykreslení line chartu
           console.log("test");
           var data = google.visualization.arrayToDataTable(
-            zjistiHodnotu()
+            zjistiHodnotu()//array data se vloží do line chartu
           );
   
           var options = {
