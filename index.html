@@ -1,0 +1,61 @@
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+  
+        function zjistiHodnotu() {//zjistí hodnotu z nacti.php
+        var ret = $.ajax({
+          url: "http://localhost/iot/nacti.php",
+          dateType: "text",
+          async: false
+        }).responseText;
+
+        //var $display = $ret.split(',');
+
+        var data = [];
+        data[0] = ["Čas","Rychlost větru"];
+
+        ret = ret.split("\n");
+        ret.pop();
+        console.log(ret);
+
+        for(let i = 0; i < ret.length; i++) {
+          let lineElements = ret[i].split(",");
+          for(let j = 0; j < lineElements.length; j++) {
+            lineElements[j] = parseInt(lineElements[j]);
+          }
+          data[i+1] = lineElements;
+        }
+
+        console.log(data);
+        return data;
+        };
+
+        function drawChart() {
+          $i = 0;
+          console.log("test");
+          var data = google.visualization.arrayToDataTable(
+            zjistiHodnotu()
+          );
+  
+          var options = {
+            title: 'Rychlost větru v průběhu času',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+          };
+  
+          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+  
+          chart.draw(data, options);
+        }
+      </script>
+    </head>
+    <body>
+      <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    </body>
+  </html>
+  
